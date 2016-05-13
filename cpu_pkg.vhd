@@ -9,7 +9,7 @@ constant REGISTER_COUNT : integer := 32;
 
 constant REGISTER_ADDRESS_WIDTH : integer := 5;
 
-constant MEM_SIZE_IN_WORDS : integer := 2048;
+constant MEM_SIZE_IN_WORDS : integer := 65536;
 
 subtype word_t is std_logic_vector(WORD_SIZE - 1 downto 0);
 
@@ -87,6 +87,7 @@ type decoded_instructon is record
 	rs1_value : word_t;
 	rs2_value : word_t;
 	immediate : std_logic_vector(15 downto 0);
+	result : word_t;
 end record decoded_instructon;
 	
 end package cpu_pkg;

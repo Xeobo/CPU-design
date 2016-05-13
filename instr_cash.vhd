@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
+use ieee.std_logic_textio.all;
 use std.textio.all;
 
 use work.cpu_pkg.all;
@@ -27,10 +28,10 @@ architecture RTL of instr_cash is
 	function init_mem return return_init_mem is
 		variable mem : return_init_mem;
 		variable index, strlen: natural; 
-		variable vl,ads : integer;
+		variable vl : integer;
 		variable read_ok : boolean;
 		variable bits : bit_vector( WORD_SIZE - 1 downto 0); 
-		
+		variable ads : word_t;
 		FILE load_file : text open read_mode is "C:/users/xeobo/desktop/instr_cash/javni_test_inst_in.txt";
 		VARiable l: line;
 		constant filename : string := "C:/users/xeobo/desktop/instr_cash/data.txt";
@@ -38,18 +39,18 @@ architecture RTL of instr_cash is
 		mem.pc := (others => '0');
 		
 		readline(load_file, l);
-		read(l,vl,read_ok);
+		hread(l,mem.pc,read_ok);
 	    if not read_ok then
 			report "error reading integer from line: "
 			severity error;
 		end if;
 
-		mem.pc := Std_logic_vector(To_unsigned(vl,WORD_SIZE));
+		--mem.pc := Std_logic_vector(To_unsigned(vl,WORD_SIZE));
 		index := 0;
 		while (not endfile(load_file)) loop
 			readline(load_file, l);
-			read(l, ads,read_ok);
-			report "procitano: " & integer'image(vl);
+			hread(l, ads,read_ok);
+			report "procitano: " & integer'image(to_integer(unsigned(ads)));
 			if not read_ok then
 				report "error reading integer from line: "
 				severity error;
@@ -63,7 +64,7 @@ architecture RTL of instr_cash is
 				severity error;
 			end if;
 							
-			mem.mem(ads) := To_StdLogicVector(bits);
+			mem.mem(To_integer(Unsigned(ads))) := To_StdLogicVector(bits);
 			index := index + 1;
 		end loop;
 		
