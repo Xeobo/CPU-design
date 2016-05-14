@@ -17,6 +17,8 @@ architecture RTL of cpu is
 	
 	signal init_pc : word_t;
 	
+	signal ex_data : decoded_instructon;
+	
 	signal instruction : word_t;
 	
 begin
@@ -24,8 +26,9 @@ begin
 	
 	if_level : entity work.instucton_fetch(RTL) port map (clk, reset, init_pc, in_ic.addr, in_ic.rd );
 	
-	id_full_level : entity work.id_full(RTL) port map (clk, reset, instruction, write_line_control, write_line_data, out_data );
+	id_full_level : entity work.id_full(RTL) port map (clk, reset, instruction, write_line_control, write_line_data, ex_data );
 	
+	ex_level : entity work.ex(RTL) port map (clk, reset, ex_data, out_data );
 	
 end RTL;
 	
