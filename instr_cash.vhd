@@ -32,9 +32,8 @@ architecture RTL of instr_cash is
 		variable read_ok : boolean;
 		variable bits : bit_vector( WORD_SIZE - 1 downto 0); 
 		variable ads : word_t;
-		FILE load_file : text open read_mode is "C:/users/xeobo/desktop/instr_cash/javni_test_inst_in.txt";
+		FILE load_file : text open read_mode is "C:\Users\Xeobo\Desktop\courses\VLSI\VHDL\sims\instr_cash\javni_test_inst_in.txt";
 		VARiable l: line;
-		constant filename : string := "C:/users/xeobo/desktop/instr_cash/data.txt";
 	begin
 		mem.pc := (others => '0');
 		

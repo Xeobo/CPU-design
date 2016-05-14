@@ -11,6 +11,8 @@ constant REGISTER_ADDRESS_WIDTH : integer := 5;
 
 constant MEM_SIZE_IN_WORDS : integer := 65536;
 
+constant DATA_MEM_SIZE_IN_WORDS : integer := 65536;
+
 subtype word_t is std_logic_vector(WORD_SIZE - 1 downto 0);
 
 subtype reg_address_t is std_logic_vector(REGISTER_ADDRESS_WIDTH - 1 downto 0);
@@ -18,6 +20,8 @@ subtype reg_address_t is std_logic_vector(REGISTER_ADDRESS_WIDTH - 1 downto 0);
 subtype address_t is std_logic_vector(WORD_SIZE - 1 downto 0);
 
 type memory_t is array (0 to MEM_SIZE_IN_WORDS - 1) of word_t;
+
+type data_memory_t is array (0 to DATA_MEM_SIZE_IN_WORDS - 1) of word_t;
 
 type register_t is array (0 to REGISTER_COUNT - 1) of word_t;
 
@@ -35,6 +39,11 @@ type in_signal_ic is record
 	addr : word_t;
 	rd : std_logic;
 end record in_signal_ic;
+
+type in_signal_dc is record
+	addr : word_t;
+	wr : std_logic;
+end record in_signal_dc;
 
 type return_init_mem is record
 	mem : memory_t;
@@ -88,6 +97,7 @@ type decoded_instructon is record
 	rs2_value : word_t;
 	immediate : std_logic_vector(15 downto 0);
 	result : word_t;
+	write_back : word_t;
 end record decoded_instructon;
 	
 end package cpu_pkg;
