@@ -85,7 +85,7 @@ begin
 			=> null;--from here value should be passed to instruction fetch brunch predictor
 		when RTS.opcode
 			=> sp_next <= Std_logic_vector(Unsigned(sp_reg) + 1);
-			   rdwr_control.addr <= sp_reg;
+			   rdwr_control.addr <= Std_logic_vector(Unsigned(sp_reg) + 1);
 			   
 			   rdwr_control.wr <= '0';--data is readed from data cache and then one clk after stored from data_cash to out_data.write_back
 		when PUSH.opcode

@@ -48,7 +48,7 @@ begin
 		when STORE.opcode 
 			=> null;
 		when MOV.opcode | MOVI.opcode | ADD.opcode | ISUB.opcode | ADDI.opcode | SUBI.opcode | IXOR.opcode | INOT.opcode | ISHL.opcode |
-			ISHR.opcode | SAR.opcode | IROL.opcode | IROR.opcode
+			ISHR.opcode | SAR.opcode | IROL.opcode | IROR.opcode | IAND.opcode | IOR.opcode 
 			=> rdwr_control.addr <= data_in.rd;
 			   rdwr_control.wr <= '1';
 			   write_data <= data_in.result;
