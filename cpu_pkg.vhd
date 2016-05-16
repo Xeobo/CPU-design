@@ -97,7 +97,6 @@ type decoded_instructon is record
 	rs2_value : word_t;
 	immediate : std_logic_vector(15 downto 0);
 	result : word_t;
-	write_back : word_t;
 end record decoded_instructon;
 	
 end package cpu_pkg;

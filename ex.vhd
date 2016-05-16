@@ -37,11 +37,12 @@ begin
 		when LOAD.opcode 
 			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) + Signed(data_in.immediate));
 		when STORE.opcode 
-			=> results_next.result <= Std_logic_vector(Signed(data_in.rs2_value) + Signed(data_in.immediate));
+			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) + Signed(data_in.immediate));
 		when MOV.opcode
 			=> results_next.result <= data_in.rs1_value;
 		when MOVI.opcode
 			=> results_next.result(15 downto 0) <= data_in.immediate;
+			   results_next.result(31 downto 16) <=  data_in.rs2_value(31 downto 16);
 		when ADD.opcode
 			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) + Signed(data_in.rs2_value));
 		when ISUB.opcode

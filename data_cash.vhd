@@ -9,9 +9,9 @@ use work.cpu_pkg.all;
 
 entity data_cash is
 	port(
-		in_control : in in_signal_dc; 
-		reset : in std_logic;
 		clk : in std_logic;
+		reset : in std_logic;
+		in_control : in in_signal_dc; 
 		in_data : in word_t;
 		out_data : out word_t
 	);
@@ -75,9 +75,10 @@ begin
 		memory_next <= memory_reg;
 		address_next <= in_control.addr;
 		
+		report "address: " & integer'image(to_integer(unsigned(in_control.addr)));
 		if(in_control.wr = '1')then
 			
-			memory_next(to_integer(Unsigned(address_reg))) <= in_data;
+			memory_next(to_integer(Unsigned(in_control.addr))) <= in_data;
 		end if;
 	end process con;
 	

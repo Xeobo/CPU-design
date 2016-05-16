@@ -89,6 +89,7 @@ begin
 	begin
 		decoded_next <= decoded_reg;
 		
+		
 		case To_integer(Unsigned(instruction(31 downto 26))) is
 			when LOAD.opcode| ADDI.opcode | SUBI.opcode
 				=> init_type1(decoded_next,instruction);
@@ -114,8 +115,15 @@ begin
 				=> init_type10(decoded_next,instruction);
 		end case;
 		decoded_next.opcode <= instruction(31 downto 26);
+		
 		line1_control.addr <= instruction(20 downto 16);
-		line2_control.addr <= instruction(15 downto 11);
+		
+		
+		if(To_integer(Unsigned(instruction(31 downto 26))) = MOVI.opcode)then
+			line2_control.addr <= instruction(25 downto 21);
+		else
+			line2_control.addr <= instruction(15 downto 11);
+		end if;
 		
 		decoded_next.rs1_value <= line1_data;
 		decoded_next.rs2_value <= line2_data;

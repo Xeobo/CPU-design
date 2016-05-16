@@ -19,8 +19,6 @@ COMPONENT cpu
 	PORT (
 	clk : IN STD_LOGIC;
 	reset : IN STD_LOGIC;
-	write_line_control : in in_signal_reg;
-	write_line_data : in word_t;
 	out_data : out decoded_instructon
 
 	);
@@ -30,10 +28,8 @@ BEGIN
 	PORT MAP (
 -- list connections between master ports and signals
 	clk => clk,
-	write_line_control => write_line_control,
-	write_line_data => write_line_data,
-	out_data => out_data,
-	reset => reset
+	reset => reset,
+	out_data => out_data
 	);
 init : PROCESS                                               
 variable clk_next : std_LOGIC := '1';
@@ -55,23 +51,11 @@ BEGIN
   wait for 1 ns;
   reset <= '0';
   
-  wait until clk'event and clk='1';
-  write_line_data <= Std_logic_vector((To_unsigned(24,WORD_SIZE)));
-	write_line_control.addr <= Std_logic_vector((To_unsigned(4,REGISTER_ADDRESS_WIDTH)));
-	write_line_control.wr <= '1';
-	
-	wait until clk'event and clk='1';
-  write_line_data <= Std_logic_vector((To_unsigned(26,WORD_SIZE)));
-	write_line_control.addr <= Std_logic_vector((To_unsigned(6,REGISTER_ADDRESS_WIDTH)));
-	write_line_control.wr <= '1';
-	
-  wait until clk'event and clk='1';
-  write_line_data <= Std_logic_vector((To_unsigned(25,WORD_SIZE)));
-	write_line_control.addr <= Std_logic_vector((To_unsigned(5,REGISTER_ADDRESS_WIDTH)));
-	write_line_control.wr <= '1';
-	
-	wait until clk'event and clk='1';
-	write_line_control.wr <= '0';
+  --wait until clk'event and clk='1';
+  --write_line_data <= Std_logic_vector((To_unsigned(65536,WORD_SIZE)));
+  --write_line_control.addr <= Std_logic_vector((To_unsigned(0,REGISTER_ADDRESS_WIDTH)));
+  --write_line_control.wr <= '1';
+  
 WAIT;                                                        
 END PROCESS always;                                          
 END cpu_arch;
