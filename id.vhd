@@ -119,7 +119,12 @@ begin
 		line1_control.addr <= instruction(20 downto 16);
 		
 		
-		if(To_integer(Unsigned(instruction(31 downto 26))) = MOVI.opcode)then
+		if(To_integer(Unsigned(instruction(31 downto 26))) = MOVI.opcode OR 
+			To_integer(Unsigned(instruction(31 downto 26))) = ISHL.opcode OR
+			To_integer(Unsigned(instruction(31 downto 26))) = ISHR.opcode OR 
+			To_integer(Unsigned(instruction(31 downto 26))) = SAR.opcode OR 
+			To_integer(Unsigned(instruction(31 downto 26))) = IROL.opcode OR 
+			To_integer(Unsigned(instruction(31 downto 26))) = IROR.opcode )then
 			line2_control.addr <= instruction(25 downto 21);
 		else
 			line2_control.addr <= instruction(15 downto 11);

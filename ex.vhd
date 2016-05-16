@@ -60,15 +60,15 @@ begin
 		when INOT.opcode
 			=> results_next.result <= Std_logic_vector(NOT Signed(data_in.rs1_value));
 		when ISHL.opcode
-			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) SLL To_integer(Unsigned(data_in.immediate)));
+			=> results_next.result <= Std_logic_vector(Signed(data_in.rs2_value) SLL To_integer(Unsigned(data_in.immediate)));
 		when ISHR.opcode
-			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) SRL To_integer(Unsigned(data_in.immediate)));
+			=> results_next.result <= Std_logic_vector(Signed(data_in.rs2_value) SRL To_integer(Unsigned(data_in.immediate)));
 		when SAR.opcode
-			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs1_value) SRA To_integer(Unsigned(data_in.immediate)));
+			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs2_value) SRA To_integer(Unsigned(data_in.immediate)));
 		when IROL.opcode
-			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs1_value) ROL To_integer(Unsigned(data_in.immediate)));
+			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs2_value) ROL To_integer(Unsigned(data_in.immediate)));
 		when IROR.opcode
-			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs1_value) ROR To_integer(Unsigned(data_in.immediate)));
+			=> results_next.result <= To_StdLogicVector(to_bitvector(data_in.rs2_value) ROR To_integer(Unsigned(data_in.immediate)));
 		when JMP.opcode | JSR.opcode 
 			=> results_next.result <= Std_logic_vector(Signed(data_in.rs1_value) + Signed(data_in.immediate));
 		when RTS.opcode
