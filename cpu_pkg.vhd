@@ -43,6 +43,7 @@ end record in_signal_ic;
 type in_signal_dc is record
 	addr : word_t;
 	wr : std_logic;
+	hlt : std_logic;
 end record in_signal_dc;
 
 type return_init_mem is record

@@ -1,4 +1,4 @@
-library ieee;
+  library ieee;
 
 use work.cpu_pkg.all;
 use ieee.std_logic_1164.all;

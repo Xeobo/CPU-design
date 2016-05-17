@@ -42,6 +42,7 @@ begin
 	sp_next <= sp_reg;
 	rdwr_control.addr <= (others => '0');
 	rdwr_control.wr <= '0';
+	rdwr_control.hlt <= '0';
 	write_data <= (others => '0');
 	case To_integer(Unsigned(data_in.opcode)) is
 		when LOAD.opcode 
@@ -105,7 +106,7 @@ begin
 		when BEQ.opcode | BNQ.opcode | BGT.opcode | BLT.opcode | BGE.opcode | BLE.opcode
 			=> null;--from here value should be passed to instruction fetch brunch predictor
 		when HALT.opcode
-			=> null;--when halt comes data from data_cash should be written in output file
+			=> rdwr_control.hlt <= '1';--when halt comes data from data_cash should be written in output file
 		when others
 			=> null;
 	end case;
