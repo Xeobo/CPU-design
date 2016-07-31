@@ -50,12 +50,6 @@ BEGIN
   reset <= '1';
   wait for 1 ns;
   reset <= '0';
-  
-  --wait until clk'event and clk='1';
-  --write_line_data <= Std_logic_vector((To_unsigned(65536,WORD_SIZE)));
-  --write_line_control.addr <= Std_logic_vector((To_unsigned(0,REGISTER_ADDRESS_WIDTH)));
-  --write_line_control.wr <= '1';
-  
 WAIT;                                                        
 END PROCESS always;                                          
 END cpu_arch;

@@ -87,10 +87,18 @@ constant BLE : instruction_info := (45,7);
 constant HALT : instruction_info := (63,10);
 
 
+type first_instr_state_t is (IF_CONST, ID_CONST, EX_CONST, MEM_CONST, OTHER );
+
+type stall_state is (NOSTALL, STALL_HAPPEND );
+
 constant OPCODE_LENGTH : integer := 6;
 
+subtype opcode_t is std_logic_vector(OPCODE_LENGTH - 1 downto 0);
+
+
 type decoded_instructon is record
-	opcode : std_logic_vector(OPCODE_LENGTH - 1 downto 0);
+	flush : std_logic;
+	opcode : opcode_t;
 	rd : std_logic_vector(REGISTER_ADDRESS_WIDTH - 1  downto 0);
 	rs1 : std_logic_vector(REGISTER_ADDRESS_WIDTH - 1 downto 0);
 	rs2 : std_logic_vector(REGISTER_ADDRESS_WIDTH - 1 downto 0);
@@ -99,5 +107,12 @@ type decoded_instructon is record
 	immediate : std_logic_vector(15 downto 0);
 	result : word_t;
 end record decoded_instructon;
-	
+
+type pass_data is record
+	opcode : opcode_t;
+	dst : reg_address_t;
+	dst_value : word_t;
+	flush : std_logic;	
+end record pass_data;
+
 end package cpu_pkg;

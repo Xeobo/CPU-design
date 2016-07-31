@@ -10,6 +10,7 @@ entity instucton_fetch is
 			clk :	in std_logic := '0';
 			reset :in std_logic := '0';
 			pc_start : in word_t := (others => '0');
+			stall : in std_logic;
 			cpu_pc : out word_t;
 			rd : out std_logic
 	);
@@ -31,7 +32,17 @@ begin
 		end if;	
 	end process clock;
 	
-	pc_next <= Std_logic_vector(Unsigned(pc_reg) + 1);
+	next_clk:process(pc_reg,stall) is
+	begin
+		
+		if(stall = '0') then
+			pc_next <= Std_logic_vector(Unsigned(pc_reg) + 1);
+		else
+			pc_next <= pc_reg;
+		end if;
+	end process next_clk;
+	
+	
 	
 	rd <= '1';
 	
