@@ -100,7 +100,8 @@ begin
 	end process clock;
 	
 	con:process(line1_data,line2_data,decoded_reg,instr,
-				id_source1_pass,id_source2_pass,id_source1_value,id_source2_value) is
+				id_source1_pass,id_source2_pass,id_source1_value,id_source2_value
+				,stall_happend_reg,last_valid_instruction_reg,stall) is
 		variable instruction : word_t;
 	begin
 		decoded_next <= decoded_reg;

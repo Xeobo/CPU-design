@@ -105,4 +105,5 @@ begin
 	end process con;
 	
 	out_data <= memory_reg(to_integer(Unsigned(address_reg)));
+
 end RTL;

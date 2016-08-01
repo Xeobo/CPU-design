@@ -66,7 +66,8 @@ architecture RTL of pass is
 	end function;
 	
 	procedure passData(signal passed_data : in pass_data; signal source : in  reg_address_t; 
-									signal source_value: out word_t; signal source_pass : out std_logic; isInited : out integer;signal out_stall : out std_logic) is
+									signal source_value: out word_t; signal source_pass : out std_logic; isInited : out integer;
+									signal out_stall : out std_logic; wb : in integer := 0) is
 	begin
 		source_value <= (others => '0');
 		source_pass <= '0';
@@ -78,8 +79,8 @@ architecture RTL of pass is
 			source_pass <= '1';
 			
 			isInited := 1;
-			
-			if(hasDestOpCode(passed_data.opcode) = 2)then
+			--in wb data is already reed and there is no need for passing
+			if(hasDestOpCode(passed_data.opcode) = 2 and wb = 0)then
 				out_stall <= '1';
 			end if;
 		end if;
@@ -100,10 +101,11 @@ begin
 	
 end process clock;
 
-alu:process(state_reg, id_source1, id_source2,
+alu:process(state_reg, id_source1, id_source2, id_opcode,
 				ex_data, mem_data, wb_data
 			) is 
 variable isInited :integer;
+variable temp_stall :std_logic;
 begin
 	state_next <= state_reg;
 	flush_mem <= '0';
@@ -184,8 +186,7 @@ begin
 						passData(mem_data, id_source1, id_source1_value, id_source1_pass, isInited,stall);
 					end if;
 					if(isInited  = 0 AND hasDestOpCode(wb_data.opcode) > 0) then
-						passData(wb_data, id_source1, id_source1_value, id_source1_pass, isInited,stall);
-						stall <= '0';
+						passData(wb_data, id_source1, id_source1_value, id_source1_pass, isInited,stall,1);
 					end if;
 				end if;
 				isInited := 0;
@@ -198,8 +199,7 @@ begin
 						passData(mem_data, id_source2, id_source2_value, id_source2_pass, isInited,stall);
 					end if;
 					if(isInited  = 0 AND hasDestOpCode(wb_data.opcode) > 0) then
-						passData(wb_data, id_source2, id_source2_value, id_source2_pass, isInited,stall);
-						stall <= '0';
+						passData(wb_data, id_source2, id_source2_value, id_source2_pass, isInited,stall,1);
 					end if;
 				end if;
 				
