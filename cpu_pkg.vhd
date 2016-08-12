@@ -106,6 +106,9 @@ type decoded_instructon is record
 	rs2_value : word_t;
 	immediate : std_logic_vector(15 downto 0);
 	result : word_t;
+	prediction : std_logic;
+	pc : address_t;
+	pc_plus_one : address_t;
 end record decoded_instructon;
 
 type pass_data is record
@@ -114,5 +117,54 @@ type pass_data is record
 	dst_value : word_t;
 	flush : std_logic;	
 end record pass_data;
+
+constant TAG_LENGTH : integer := 24;
+
+subtype tag_t is std_logic_vector(TAG_LENGTH - 1 downto 0);
+
+type predictor_data is record
+	tag : tag_t;
+	prediction : address_t;
+	twobits : std_logic_vector(1 downto 0);
+	valid : std_logic;
+end record predictor_data;
+
+type predictor_memory_t is array (0 to 2**((WORD_SIZE - TAG_LENGTH) - 1)) of predictor_data;
+
+constant INIT_PREDICTOR_REG : predictor_data := (
+													tag => (others=> '0'),
+													prediction => (others=> '0'),
+													twobits => (others=> '0'),
+													valid => '0'
+												);
+												
+constant INIT_DECODED_INSTRUCTION : decoded_instructon := (
+													flush => '0',
+													opcode => (others => '0'),
+													rd => (others => '0'),
+													rs1 => (others => '0'),
+													rs2 => (others => '0'),
+													rs1_value => (others => '0'),
+													rs2_value => (others => '0'),
+													immediate => (others => '0'),
+													result => (others => '0'),
+													prediction => '0',
+													pc => (others => '0'),
+													pc_plus_one => (others => '0')
+												);
+constant STRONG_TAKEN : integer := 3;
+constant WEAK_TAKEN : integer := 2;
+constant WEAK_NOT_TAKEN : integer := 1;
+constant STRONG_NOT_TAKEN : integer := 0;
+
+type array_int is array (0 to 3) of integer;
+
+constant positive_prediction : array_int := (STRONG_NOT_TAKEN, STRONG_NOT_TAKEN,STRONG_TAKEN,STRONG_TAKEN);
+
+constant negative_prediction : array_int := (WEAK_NOT_TAKEN,WEAK_TAKEN,WEAK_NOT_TAKEN,WEAK_TAKEN);
+
+constant prediction_array :  std_logic_vector(0 to 3) := ('0','0','1','1');
+
+type mem_state is (HALT_MEM_STATE, NO_HALT_MEM_STATE);
 
 end package cpu_pkg;

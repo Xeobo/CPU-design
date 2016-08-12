@@ -9,10 +9,12 @@ entity id_without_regfile is
 		clk : in std_logic;
 		reset : in std_logic;
 		instr : in word_t;
+		data_in : in decoded_instructon;
 		data : out decoded_instructon;
 		line1_data : in word_t;
 		line2_data : in word_t;
 		stall : in std_logic;
+		flush : in std_logic;
 		id_source1_pass : in std_logic;
 		id_source1_value : in word_t;
 		id_source2_pass : in std_logic;
@@ -89,7 +91,7 @@ begin
 	clock: process(reset,clk) is
 	begin
 		if(reset = '1')then 
-			decoded_reg <= ('0',others => (others=>'0'));
+			decoded_reg <= INIT_DECODED_INSTRUCTION;
 			stall_happend_reg <= NOSTALL;
 			last_valid_instruction_reg <= (others=>'0');
 		elsif(rising_edge(clk))then
@@ -101,11 +103,11 @@ begin
 	
 	con:process(line1_data,line2_data,decoded_reg,instr,
 				id_source1_pass,id_source2_pass,id_source1_value,id_source2_value
-				,stall_happend_reg,last_valid_instruction_reg,stall) is
+				,stall_happend_reg,last_valid_instruction_reg,stall,flush,data_in) is
 		variable instruction : word_t;
 	begin
-		decoded_next <= decoded_reg;
-		
+		decoded_next <= data_in;
+		decoded_next.flush <= flush or data_in.flush;
 		last_valid_instruction_next <= last_valid_instruction_reg;
 		
 		--if stall happend in one clk before, same operation should be considered last valid operation
@@ -133,7 +135,7 @@ begin
 		
 		if(stall = '0') then
 			stall_happend_next <= NOSTALL;
-			decoded_next.flush <= '0';
+			--decoded_next.flush <= '0';
 			case To_integer(Unsigned(instruction(31 downto 26))) is
 				when LOAD.opcode| ADDI.opcode | SUBI.opcode
 					=> init_type1(decoded_next,instruction);

@@ -15,6 +15,9 @@ entity wb is
 		wb_data : out pass_data;
 		rdwr_control : out in_signal_reg; 
 		write_data : out word_t;
+		flush_if_wb : out std_logic;
+		wr : out std_logic;
+		data_wr : out address_t;
 		data_out : out decoded_instructon
 		
 	);
@@ -29,12 +32,12 @@ begin
 clock:process(clk,reset) is
 begin
 	if(reset = '1')then
-		results_reg <= ('0',others =>(others => '0'));
+		results_reg <= INIT_DECODED_INSTRUCTION;
 	elsif(rising_edge(clk))then
 		results_reg <= results_next;
 	end if;
 	
-end process clock;
+end process clock;	
 
 alu:process(data_in,write_back,flush_wb) is 
 begin
@@ -47,6 +50,10 @@ begin
 	wb_data.dst <= data_in.rd;
 	wb_data.opcode <= data_in.opcode;
 	wb_data.flush <= '1';
+	
+	flush_if_wb <= '0';
+	wr <= '0';
+	data_wr <= (others => '0');
 	
 	if(data_in.flush = '0' AND flush_wb = '0' ) then
 		wb_data.flush <= '0';
@@ -67,7 +74,10 @@ begin
 			when JMP.opcode | JSR.opcode 
 				=> null;
 			when RTS.opcode
-				=> null;
+				=>
+				flush_if_wb <= '1';
+				wr <= '1';
+				data_wr <= write_back;
 			when PUSH.opcode
 				=> null;
 			when BEQ.opcode | BNQ.opcode | BGT.opcode | BLT.opcode | BGE.opcode | BLE.opcode

@@ -9,16 +9,28 @@ entity instucton_fetch is
 	port(
 			clk :	in std_logic := '0';
 			reset :in std_logic := '0';
+			prediction :in std_logic;
+			prediction_valid :in std_logic;
+			predicted_adr :in address_t;
+			wr_pc :in std_logic;
+			address_wr : in address_t;
+			wr_pc_wb :in std_logic;
+			address_wr_wb : in address_t;
 			pc_start : in word_t := (others => '0');
 			stall : in std_logic;
+			flush : in std_logic;
+			flush_wb : in std_logic;
 			cpu_pc : out word_t;
-			rd : out std_logic
+			rd : out std_logic;
+			address : out address_t;
+			out_data : out decoded_instructon
 	);
 
 end entity instucton_fetch;
 
 architecture RTL of  instucton_fetch is
 	signal pc_reg, pc_next: word_t;
+	signal instr_data_reg, instr_data_next : decoded_instructon; 
 	signal state_reg,state_next : std_logic;
 	
 begin
@@ -26,23 +38,40 @@ begin
 	begin
 		if(reset = '1')then
 			pc_reg <= pc_start;
+			instr_data_reg <= INIT_DECODED_INSTRUCTION;
 		elsif(rising_edge(clk))then
 			pc_reg <= pc_next;
 			state_reg <= state_next;
+			instr_data_reg <= instr_data_next;
 		end if;	
 	end process clock;
 	
-	next_clk:process(pc_reg,stall) is
+	next_clk:process(pc_reg,stall,flush,wr_pc,prediction,address_wr,flush_wb,wr_pc_wb,address_wr_wb) is
 	begin
-		
+		instr_data_next <= instr_data_reg;
+		address <= pc_reg;
+		instr_data_next.flush <= flush or flush_wb;
 		if(stall = '0') then
-			pc_next <= Std_logic_vector(Unsigned(pc_reg) + 1);
+			if(wr_pc_wb = '1') then
+				pc_next<= address_wr_wb;
+			elsif(wr_pc = '1') then
+				pc_next<= address_wr;
+			else
+				if(prediction_valid = '1') then
+					pc_next <= predicted_adr;
+				else
+					pc_next <= Std_logic_vector(Unsigned(pc_reg) + 1);
+				end if;
+				instr_data_next.prediction <= prediction;
+				instr_data_next.pc <= pc_reg;
+				instr_data_next.pc_plus_one <= Std_logic_vector(Unsigned(pc_reg) + 1);
+			end if;
 		else
 			pc_next <= pc_reg;
 		end if;
 	end process next_clk;
 	
-	
+	out_data <= instr_data_reg;
 	
 	rd <= '1';
 	

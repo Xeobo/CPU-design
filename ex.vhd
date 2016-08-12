@@ -10,6 +10,7 @@ entity ex is
 		clk : in std_logic;
 		reset : in std_logic;
 		data_in : in decoded_instructon;
+		flush : in std_logic;
 		ex_data : out pass_data;
 		data_out : out decoded_instructon
 	);
@@ -24,20 +25,23 @@ begin
 clock:process(clk,reset) is
 begin
 	if(reset = '1')then
-		results_reg <= ('0',others =>(others => '0'));
+		results_reg <= INIT_DECODED_INSTRUCTION;
 	elsif(rising_edge(clk))then
 		results_reg <= results_next;
 	end if;
 	
 end process clock;
 
-alu:process(data_in,results_reg) is 
+alu:process(data_in,results_reg,flush) is 
 variable temp_result : word_t;
 begin
 	results_next <= data_in;
+	results_next.flush <= data_in.flush OR flush;
+	
 	ex_data.opcode <= data_in.opcode;
 	ex_data.dst <= data_in.rd;
-	ex_data.flush <= data_in.flush;
+	ex_data.flush <= data_in.flush OR flush;
+	
 	temp_result := (others =>'0');
 	
 	
@@ -77,16 +81,14 @@ begin
 			=> temp_result := To_StdLogicVector(to_bitvector(data_in.rs2_value) ROL To_integer(Unsigned(data_in.immediate)));
 		when IROR.opcode
 			=> temp_result := To_StdLogicVector(to_bitvector(data_in.rs2_value) ROR To_integer(Unsigned(data_in.immediate)));
-		when JMP.opcode | JSR.opcode 
+		when JMP.opcode | JSR.opcode | RTS.opcode
 			=> temp_result := Std_logic_vector(Unsigned(data_in.rs1_value) + Unsigned(data_in.immediate));
-		when RTS.opcode
-			=> null; 
 		when PUSH.opcode
 			=> null;
 		when POP.opcode
 			=> null;
 		when BEQ.opcode | BNQ.opcode | BGT.opcode | BLT.opcode | BGE.opcode | BLE.opcode
-			=> temp_result := Std_logic_vector(Unsigned(data_in.rs1_value) - Unsigned(data_in.rs2_value));
+			=> temp_result := Std_logic_vector(Signed(data_in.pc_plus_one) + Signed(data_in.immediate));
 		when HALT.opcode
 			=> null;
 		when others

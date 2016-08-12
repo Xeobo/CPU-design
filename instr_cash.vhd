@@ -43,6 +43,10 @@ architecture RTL of instr_cash is
 			report "error reading integer from line: "
 			severity error;
 		end if;
+		
+		f:for i in 0 to MEM_SIZE_IN_WORDS - 1 loop
+			mem.mem(i) := (others => '0');
+		end loop f;
 
 		--mem.pc := Std_logic_vector(To_unsigned(vl,WORD_SIZE));
 		index := 0;
