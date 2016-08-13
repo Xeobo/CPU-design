@@ -17,31 +17,28 @@ entity wb is
 		write_data : out word_t;
 		flush_if_wb : out std_logic;
 		wr : out std_logic;
-		data_wr : out address_t;
-		data_out : out decoded_instructon
-		
+		data_wr : out address_t
 	);
 	
 end entity wb;
 
 
 architecture RTL of wb is
-signal results_reg, results_next : decoded_instructon;
+
 begin
 
 clock:process(clk,reset) is
 begin
 	if(reset = '1')then
-		results_reg <= INIT_DECODED_INSTRUCTION;
+		
 	elsif(rising_edge(clk))then
-		results_reg <= results_next;
+		
 	end if;
 	
 end process clock;	
 
 alu:process(data_in,write_back,flush_wb) is 
 begin
-	results_next <= data_in;
 	rdwr_control.addr <= (others => '0');
 	rdwr_control.wr <= '0';
 	write_data <= (others => '0');
@@ -89,7 +86,5 @@ begin
 		end case;
 	end if;
 end process alu;
-
-data_out <= results_reg;
 
 end RTL;

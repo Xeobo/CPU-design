@@ -13,6 +13,7 @@ entity predictor is
 		address_wr : in address_t;
 		data_wr : in address_t;
 		wr : in std_logic;
+		bad_address :in std_logic;
 		prediction_ok : in std_logic;
 		predict : out std_logic;
 		predict_address : out address_t;
@@ -36,7 +37,7 @@ begin
 	
 end process clock;
 
-alu:process(address,predictions_reg,data_wr,address_wr,wr,prediction_ok) is 
+alu:process(address,predictions_reg,data_wr,address_wr,wr,prediction_ok,bad_address) is 
 	variable index : integer;
 	variable index_wr : integer;
 begin
@@ -64,8 +65,9 @@ begin
 			else
 				predictions_next(index_wr).twobits <= Std_logic_vector(To_Unsigned(negative_prediction(to_integer(Unsigned(predictions_reg(index_wr).twobits))),2));
 			end if;
-			
-			if((to_integer(Unsigned(predictions_reg(index_wr).twobits)) = WEAK_TAKEN and prediction_ok = '0')
+			if(bad_address = '1') then
+				predictions_next(index_wr).prediction <= data_wr;
+			elsif((to_integer(Unsigned(predictions_reg(index_wr).twobits)) = WEAK_TAKEN and prediction_ok = '0')
 					OR (to_integer(Unsigned(predictions_reg(index_wr).twobits)) = WEAK_NOT_TAKEN and prediction_ok = '0')) then
 				predictions_next(index_wr).prediction <= data_wr;
 			end if;

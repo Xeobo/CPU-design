@@ -109,6 +109,7 @@ type decoded_instructon is record
 	prediction : std_logic;
 	pc : address_t;
 	pc_plus_one : address_t;
+	predicted_address : address_t;
 end record decoded_instructon;
 
 type pass_data is record
@@ -150,7 +151,8 @@ constant INIT_DECODED_INSTRUCTION : decoded_instructon := (
 													result => (others => '0'),
 													prediction => '0',
 													pc => (others => '0'),
-													pc_plus_one => (others => '0')
+													pc_plus_one => (others => '0'),
+													predicted_address => (others => '0')
 												);
 constant STRONG_TAKEN : integer := 3;
 constant WEAK_TAKEN : integer := 2;

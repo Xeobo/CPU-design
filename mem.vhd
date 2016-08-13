@@ -14,6 +14,7 @@ entity mem is
 		address_wr : out address_t;
 		data_wr : out address_t;
 		wr : out std_logic;
+		bad_address : out std_logic;
 		prediction_ok : out std_logic;
 		writePc : out std_logic;
 		mem_data : out pass_data;
@@ -49,7 +50,7 @@ begin
 	
 end process clock;
 
-alu:process(data_in,sp_reg,flush_mem) is 
+alu:process(data_in,sp_reg,flush_mem,mem_state_reg) is 
 variable condition : integer;
 begin
 	results_next <= data_in;
@@ -75,6 +76,8 @@ begin
 	flush_if <= '0';
 	flush_id <= '0';
 	flush_ex <= '0';
+	
+	bad_address <= '0';
 	
 	mem_state_next <= mem_state_reg;
 	
@@ -127,6 +130,14 @@ begin
 				=> 
 					--from here value should be passed to instruction fetch brunch predictor
 					if(data_in.prediction = '1')then
+						if(data_in.predicted_address /= data_in.result)then
+							bad_address <= '1';
+							flush_if <= '1';
+							flush_id <= '1';
+							flush_ex <= '1';
+							writePc<= '1';
+						end if;
+						
 						data_wr <= data_in.result;
 						address_wr <= data_in.pc;
 						prediction_ok <= '1';
@@ -152,6 +163,13 @@ begin
 					
 					--from here value should be passed to instruction fetch brunch predictor
 					if(data_in.prediction = '1')then
+						if(data_in.predicted_address /= data_in.result)then
+							bad_address <= '1';
+							flush_if <= '1';
+							flush_id <= '1';
+							flush_ex <= '1';
+							writePc<= '1';
+						end if;
 						data_wr <= data_in.result;
 						address_wr <= data_in.pc;
 						prediction_ok <= '1';
@@ -225,6 +243,13 @@ begin
 					end case;
 					if(condition = 1) then
 						if(data_in.prediction = '1')then
+							if(data_in.predicted_address /= data_in.result)then
+								bad_address <= '1';
+								flush_if <= '1';
+								flush_id <= '1';
+								flush_ex <= '1';
+								writePc<= '1';
+							end if;
 							data_wr <= data_in.result;
 							address_wr <= data_in.pc;
 							prediction_ok <= '1';
@@ -243,6 +268,7 @@ begin
 							address_wr <= data_in.pc;
 							prediction_ok <= '1';
 						else
+							
 							data_wr <= data_in.pc_plus_one;
 							address_wr <= data_in.pc;
 							prediction_ok <= '0';

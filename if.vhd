@@ -31,7 +31,6 @@ end entity instucton_fetch;
 architecture RTL of  instucton_fetch is
 	signal pc_reg, pc_next: word_t;
 	signal instr_data_reg, instr_data_next : decoded_instructon; 
-	signal state_reg,state_next : std_logic;
 	
 begin
 	clock:process(clk,reset,pc_start) is
@@ -41,12 +40,11 @@ begin
 			instr_data_reg <= INIT_DECODED_INSTRUCTION;
 		elsif(rising_edge(clk))then
 			pc_reg <= pc_next;
-			state_reg <= state_next;
 			instr_data_reg <= instr_data_next;
 		end if;	
 	end process clock;
 	
-	next_clk:process(pc_reg,stall,flush,wr_pc,prediction,address_wr,flush_wb,wr_pc_wb,address_wr_wb) is
+	next_clk:process(pc_reg,stall,flush,wr_pc,prediction,address_wr,flush_wb,wr_pc_wb,address_wr_wb,instr_data_reg,prediction_valid,predicted_adr) is
 	begin
 		instr_data_next <= instr_data_reg;
 		address <= pc_reg;
@@ -65,6 +63,7 @@ begin
 				instr_data_next.prediction <= prediction;
 				instr_data_next.pc <= pc_reg;
 				instr_data_next.pc_plus_one <= Std_logic_vector(Unsigned(pc_reg) + 1);
+				instr_data_next.predicted_address <= predicted_adr;
 			end if;
 		else
 			pc_next <= pc_reg;

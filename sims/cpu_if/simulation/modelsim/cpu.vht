@@ -18,9 +18,7 @@ SIGNAL reset : STD_LOGIC;
 COMPONENT cpu
 	PORT (
 	clk : IN STD_LOGIC;
-	reset : IN STD_LOGIC;
-	out_data : out decoded_instructon
-
+	reset : IN STD_LOGIC
 	);
 END COMPONENT;
 BEGIN
@@ -28,8 +26,7 @@ BEGIN
 	PORT MAP (
 -- list connections between master ports and signals
 	clk => clk,
-	reset => reset,
-	out_data => out_data
+	reset => reset
 	);
 init : PROCESS                                               
 variable clk_next : std_LOGIC := '1';

@@ -110,6 +110,10 @@ begin
 		decoded_next.flush <= flush or data_in.flush;
 		last_valid_instruction_next <= last_valid_instruction_reg;
 		
+		line1_control <= ((others => '0'),'0');
+		
+		line2_control <= ((others => '0'),'0');
+		
 		--if stall happend in one clk before, same operation should be considered last valid operation
 		case stall_happend_reg is
 			when STALL_HAPPEND
