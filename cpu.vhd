@@ -84,10 +84,12 @@ architecture RTL of cpu is
 	signal wr_wb : std_logic;
 	signal bad_address : std_logic;
 	
-begin
-	inst_cash : entity work.instr_cash(RTL) port map (in_ic, reset, clk, instruction, init_pc );
+	signal wr_pc_init : std_logic;
 	
-	cpu_no_cache : entity work.cpu_no_cache(RTL) port map (clk, reset, init_pc, instruction, write_back, write_data, in_dc, in_ic);
+begin
+	inst_cash : entity work.instr_cash(RTL) port map (in_ic, reset, clk, instruction, wr_pc_init, init_pc );
+	
+	cpu_no_cache : entity work.cpu_no_cache(RTL) port map (clk, reset, wr_pc_init, init_pc, instruction, write_back, write_data, in_dc, in_ic);
 	
 	data_cash_level : entity work.data_cash(RTL) port map (clk, reset, in_dc, write_data, write_back );
 

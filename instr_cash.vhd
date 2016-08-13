@@ -9,10 +9,11 @@ use work.cpu_pkg.all;
 
 entity instr_cash is
 	port(
-		in_signal : in in_signal_ic := (addr => (others => '0'), rd => '0' ); 
+		in_signal : in in_signal_ic := (addr => (others => '0')); 
 		reset : in std_logic := '0';
 		clk : in std_logic := '0';
 		out_data : out word_t;
+		wr_init_pc : out std_logic;
 		out_init_pc : out word_t
 	);
 end entity instr_cash;
@@ -84,28 +85,26 @@ begin
 			memory_reg <= ret_val.mem;
 			out_init_pc <= ret_val.pc;
 			state_reg <= '0';
+			wr_init_pc <= '1';
 			address_reg <=  (others =>'0');
 		elsif(clk'event and clk = '1')then
 			memory_reg <= memory_next;
 			state_reg <= state_next;
 			address_reg <= address_next;
 			out_init_pc <= (others => '0');
+			wr_init_pc <= '0';
 		end if;
 	end process clock;
 	
-	con:process(in_signal,memory_reg,state_reg,address_reg) is
+	con:process(in_signal,memory_reg,address_reg) is
 	begin
 		memory_next <= memory_reg;
-		state_next <= state_reg;
 		address_next <= address_reg;
 		
-		if(in_signal.rd = '1')then
-			state_next <= '1';
-			address_next <= in_signal.addr;
-		end if;
-		if(state_reg = '1') then
-			state_next <= '0';
-		end if;
+		
+		state_next <= '1';
+		address_next <= in_signal.addr;
+		
 	end process con;
 	
 	out_data <= memory_reg(to_integer(Unsigned(address_reg)));

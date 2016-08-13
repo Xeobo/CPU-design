@@ -37,7 +37,6 @@ end record in_signal_reg;
 
 type in_signal_ic is record
 	addr : word_t;
-	rd : std_logic;
 end record in_signal_ic;
 
 type in_signal_dc is record
@@ -167,6 +166,6 @@ constant negative_prediction : array_int := (WEAK_NOT_TAKEN,WEAK_TAKEN,WEAK_NOT_
 
 constant prediction_array :  std_logic_vector(0 to 3) := ('0','0','1','1');
 
-type mem_state is (HALT_MEM_STATE, NO_HALT_MEM_STATE);
+type mem_state is (NO_HALT_MEM_STATE, HALT_MEM_STATE);
 
 end package cpu_pkg;

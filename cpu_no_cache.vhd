@@ -6,6 +6,7 @@ use ieee.std_logic_1164.all;
 entity cpu_no_cache is
 	port (
 		clk, reset: in std_logic;
+		wr_pc_init: in std_logic;
 		init_pc : in word_t;
 		instruction : in word_t;
 		write_back : in word_t;
@@ -82,7 +83,7 @@ architecture RTL of cpu_no_cache is
 	
 begin
 	
-	if_level : entity work.if_full(RTL) port map (clk, reset, wr_pc, address_wr, init_pc, stall, flush_if, flush_if_wb, data_wr, wr, bad_address,data_wr_wb, wr_wb, prediction_ok, in_ic.addr, in_ic.rd, if_data);
+	if_level : entity work.if_full(RTL) port map (clk, reset, wr_pc, wr_pc_init, address_wr, init_pc, stall, flush_if, flush_if_wb, data_wr, wr, bad_address,data_wr_wb, wr_wb, prediction_ok, in_ic.addr, if_data);
 	
 	id_full_level : entity work.id_full(RTL) port map (clk, reset, instruction, if_data, write_line_control, write_line_data, stall, flush_id, id_source1_pass, id_source1_value
 					, id_source2_pass, id_source2_value, id_opcode, id_source1, id_source2, ex_data );
@@ -91,10 +92,11 @@ begin
 	
 	mem_level : entity work.mem(RTL) port map (clk, reset, flush_mem, mem_data, address_wr, data_wr, wr, bad_address, prediction_ok, wr_pc, mem_pass, in_dc, write_data, flush_if, flush_id, flush_ex, wb_data );
 	
-	wb_level : entity work.wb(RTL) port map (clk, reset, flush_wb, wb_data, write_back, wb_pass, write_line_control, write_line_data, flush_if_wb, wr_wb, data_wr_wb );
-	
 	pass_level : entity work.pass(RTL) port map (clk, reset, id_opcode, id_source1, id_source2, ex_pass, mem_pass, wb_pass, id_source1_pass, id_source1_value 
 					, id_source2_pass, id_source2_value, flush_mem, flush_wb, stall );
+	
+	wb_level : entity work.wb(RTL) port map (clk, reset, flush_wb, wb_data, write_back, wb_pass, write_line_control, write_line_data, flush_if_wb, wr_wb, data_wr_wb );
+	
 	
 end RTL;
 	
